@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { connect } from "react-redux";
 
-function App() {
+// Pages
+import NavbarList from "./Components/Nabar/NavbarList";
+import Books from "./Components/Books/Books";
+import Cart from "./Components/Cart/Cart";
+import SingleItem from "./Components/SingleItem/SingleItem";
+
+
+function App({ current }) {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <Router>
+      <div>
+      <NavbarList />
+
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        <Route path="/" element={<Books />} />
+        <Route path="/cart" element={<Cart />} />
+        {!current ? (
+            <Route to="/" />
+          ) : (
+            <Route path="/book/:id" element={<SingleItem />} />
+            )}
+        
+      </Routes>
+    </Suspense>
     </div>
-  );
+
+  </Router> );
 }
 
-export default App;
+
+const mapStateToProps = (state) => {
+  return {
+    current: state.shop.currentItem,
+  };
+};
+
+export default connect(mapStateToProps)(App);
